@@ -1,9 +1,15 @@
 import socket
 import json
+from game import Othello
 
 serverAddress = ('localhost',3000)
 with open('Inscription.json') as file:
         strJson = file.read()
+lives = 3
+list_of_errors = []
+state_of_the_game = ""
+the_move_played = ""
+
 
 def client():
     s = socket.socket()
@@ -24,18 +30,38 @@ def server():
     serverAddress2 = ('0.0.0.0',json.loads(strJson)['port'])
     s2.bind(serverAddress2)
     s2.listen()
-    msg_perso = {"response": "pong"}
-    
+    rep_ping = {"response": "pong"}
+    choix_coup = int(input("Jouer un coup (taper 1) ou abandonner (taper 2) : "))
+    msg_coup = {
+   "request": "play",
+   "lives": 3,
+   "errors": list_of_errors,
+   "state": state_of_the_game
+}
+    rep_coup = {
+   "response": "move",
+   "move": the_move_played,
+   "message": "Fun message"
+}
     while True:
         prof, address = s2.accept()
         msg_prof= json.loads(prof.recv(2048).decode())
         print(msg_prof)
         if msg_prof == {"request": "ping"}:
-            # pas besoin car deja co s2.connect(serverAddress)
-            prof.send(json.dumps(msg_perso).encode()) #convertit le dico python en fichier json
-            print(msg_perso)
+            prof.send(json.dumps(rep_ping).encode()) #convertit le dico python en fichier json
+            print(rep_ping)
+        if msg_prof == msg_coup:
+            if choix_coup == 1:
+                prof.send(json.dumps(rep_coup).encode())
+                print(rep_coup)
+            if choix_coup == 2:
+                prof.send(json.dumps(rep_coup).encode())
+                print(rep_coup)
+            else :
+                print("Veuillez retaper le bon chiffre svp.")
 
         prof.close()
+
 
 if client() == True:
     server()
