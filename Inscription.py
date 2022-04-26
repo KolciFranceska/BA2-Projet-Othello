@@ -60,7 +60,7 @@ def server(Joueur):
             print(json.loads(Joueur)['name'], rep_ping)
         if msg_prof['request'] == 'play':
             state = [black,white]
-            the_move_played= int(input("Sélectionner une case pour jouer: "))
+            rep_coup['move']= int(input("Sélectionner une case pour jouer: "))
             prof.send(json.dumps(rep_coup).encode())
             print(rep_coup)
         prof.close()
