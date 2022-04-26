@@ -1,5 +1,6 @@
 import socket
 import json
+import threading
 
 serverAddress = ('localhost',3000)
 with open('Joueur1.json') as file:
@@ -58,14 +59,17 @@ def server(Joueur):
             print(rep_ping)
         if msg_prof['request'] == 'play':
             state = [black,white]
-            the_move_played= input(int("Sélectionner une case pour jouer: "))
+            the_move_played= int(input("Sélectionner une case pour jouer: "))
             prof.send(json.dumps(rep_coup).encode())
             print(rep_coup)
         prof.close()
 
-def jouer(joueur):
-    if client(joueur) == True:
-        server(joueur)
-        
-jouer(Inscri1)
-jouer(Inscri2)
+def jouer():
+    if client(Inscri1) == True:
+        server(Inscri1)
+
+thread = threading.Thread(target = jouer, daemon = True)
+thread.start()
+while True :
+    if client(Inscri2)==True:
+        server(Inscri2)
