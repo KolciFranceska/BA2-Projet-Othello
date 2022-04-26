@@ -1,0 +1,6 @@
+{
+    "request": "subscribe",
+    "port": 8888,
+    "name": "Frann",
+    "matricules": ["195387"]
+ }

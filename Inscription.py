@@ -1,20 +1,17 @@
 import socket
 import json
-from game import Othello
 
 serverAddress = ('localhost',3000)
-with open('Inscription.json') as file:
-        strJson = file.read()
-lives = 3
-list_of_errors = []
-state_of_the_game = ""
-the_move_played = ""
+with open('Joueur1.json') as file:
+    Inscri1 = file.read()
+with open('Joueur2.json') as file:
+    Inscri2 = file.read()
 
 
-def client():
+def client(Joueur):
     s = socket.socket()
     s.connect((serverAddress))
-    s.send(strJson.encode())
+    s.send(Joueur.encode())
     response = json.loads(s.recv(2048).decode()) #on reçoit un fichier json en réponse, pour le transformer en dico python on utilise loads
     if  response == {"response": "ok"}:
         print(response)
@@ -25,24 +22,33 @@ def client():
         print(response)
         return False
 
-def server():
+def server(Joueur):
     s2 = socket.socket()
-    serverAddress2 = ('0.0.0.0',json.loads(strJson)['port'])
+    serverAddress2 = ('0.0.0.0',json.loads(Joueur)['port'])
     s2.bind(serverAddress2)
     s2.listen()
     rep_ping = {"response": "pong"}
-    choix_coup = int(input("Jouer un coup (taper 1) ou abandonner (taper 2) : "))
+
+    the_move_played = int
+    list_of_errors = []
+    state = {
+    "players": [],
+    "current": 0,
+    "board":[]}
+
     msg_coup = {
    "request": "play",
    "lives": 3,
    "errors": list_of_errors,
-   "state": state_of_the_game
-}
+   "state": state}
+
     rep_coup = {
    "response": "move",
    "move": the_move_played,
-   "message": "Fun message"
-}
+   "message": "Fun message"}
+
+    black = []
+    white = []
     while True:
         prof, address = s2.accept()
         msg_prof= json.loads(prof.recv(2048).decode())
@@ -50,18 +56,16 @@ def server():
         if msg_prof == {"request": "ping"}:
             prof.send(json.dumps(rep_ping).encode()) #convertit le dico python en fichier json
             print(rep_ping)
-        if msg_prof == msg_coup:
-            if choix_coup == 1:
-                prof.send(json.dumps(rep_coup).encode())
-                print(rep_coup)
-            if choix_coup == 2:
-                prof.send(json.dumps(rep_coup).encode())
-                print(rep_coup)
-            else :
-                print("Veuillez retaper le bon chiffre svp.")
-
+        if msg_prof['request'] == 'play':
+            state = [black,white]
+            the_move_played= input(int("Sélectionner une case pour jouer: "))
+            prof.send(json.dumps(rep_coup).encode())
+            print(rep_coup)
         prof.close()
 
-
-if client() == True:
-    server()
+def jouer(joueur):
+    if client(joueur) == True:
+        server(joueur)
+        
+jouer(Inscri1)
+jouer(Inscri2)

@@ -1,0 +1,6 @@
+{
+    "request": "subscribe",
+    "port": 8880,
+    "name": "Ibo ",
+    "matricules": ["20187"]
+ }
