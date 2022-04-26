@@ -1,6 +1,7 @@
 import socket
 import json
 import threading
+from unicodedata import name
 
 serverAddress = ('localhost',3000)
 with open('Joueur1.json') as file:
@@ -15,12 +16,12 @@ def client(Joueur):
     s.send(Joueur.encode())
     response = json.loads(s.recv(2048).decode()) #on reçoit un fichier json en réponse, pour le transformer en dico python on utilise loads
     if  response == {"response": "ok"}:
-        print(response)
+        print(json.loads(Joueur)['name'], response)
         s.close()
         return True
     else:
         s.close()
-        print(response)
+        print(json.loads(Joueur)['name'], response)
         return False
 
 def server(Joueur):
@@ -56,7 +57,7 @@ def server(Joueur):
         print(msg_prof)
         if msg_prof == {"request": "ping"}:
             prof.send(json.dumps(rep_ping).encode()) #convertit le dico python en fichier json
-            print(rep_ping)
+            print(json.loads(Joueur)['name'], rep_ping)
         if msg_prof['request'] == 'play':
             state = [black,white]
             the_move_played= int(input("Sélectionner une case pour jouer: "))
