@@ -60,10 +60,17 @@ def server(Joueur):
             prof.send(json.dumps(rep_ping).encode()) #convertit le dico python en fichier json
             print(json.loads(Joueur)['name'], rep_ping)
         if msg_prof['request'] == 'play':
-            rep_coup['move']= choice(possibleMoves(msg_prof["state"]))
-            rep_coup['message']=str(rep_coup['move'])
-            prof.send(json.dumps(rep_coup).encode())
-            print(json.loads(Joueur)['name'] + str(rep_coup['move']))
+            print(possibleMoves(msg_prof['state']))
+            if len(possibleMoves(msg_prof['state'])) != 0 :
+                rep_coup['move']= choice(possibleMoves(msg_prof["state"]))
+                rep_coup['message']=str(rep_coup['move'])
+                prof.send(json.dumps(rep_coup).encode())
+                print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
+            if len(possibleMoves(msg_prof['state'])) == 0:
+                rep_coup['move'] = None
+                prof.send(json.dumps(rep_coup).encode())
+                print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
+
         prof.close()
 
 directions = [
@@ -209,8 +216,8 @@ def Othello(players):
 Game = Othello
 
 def jouer():
-    if client(Inscri1) == True:
-        server(Inscri1)
+    if client(Inscri2) == True:
+        server(Inscri2)
 
 jouer()
 
