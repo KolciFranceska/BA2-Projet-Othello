@@ -1,3 +1,5 @@
+from cgitb import reset
+from random import choice
 import socket
 import json
 import threading
@@ -5,7 +7,7 @@ from unicodedata import name
 import copy
 import game2
 
-serverAddress = ('localhost',3000)
+serverAddress = ('172.17.10.33',3000)
 with open('Joueur1.json') as file:
     Inscri1 = file.read()
 with open('Joueur2.json') as file:
@@ -38,7 +40,7 @@ def server(Joueur):
     "players": [],
     "current": 0,
     "board":[]}
-
+    
     msg_coup = {
    "request": "play",
    "lives": 3,
@@ -58,10 +60,10 @@ def server(Joueur):
             prof.send(json.dumps(rep_ping).encode()) #convertit le dico python en fichier json
             print(json.loads(Joueur)['name'], rep_ping)
         if msg_prof['request'] == 'play':
-            rep_coup['move']= my_move
+            rep_coup['move']= choice(possibleMoves(msg_prof["state"]))
             rep_coup['message']=str(rep_coup['move'])
             prof.send(json.dumps(rep_coup).encode())
-            print(json.loads(Joueur)['name'] + rep_coup)
+            print(json.loads(Joueur)['name'] + str(rep_coup['move']))
         prof.close()
 
 directions = [
@@ -143,6 +145,7 @@ def willBeTaken(state, move):
     return [index(case) for case in cases]
 
 def possibleMoves(state):
+    print(state)
     res = []
     for move in range(64):
         try:
@@ -205,23 +208,14 @@ def Othello(players):
 
 Game = Othello
 
-def my_move():
-    
-
-if __name__ == '__main__':
-    state, next = Game(['LUR', 'HSL'])
-
-    move = 26
-
-    print(next(state, move))
-
-
 def jouer():
     if client(Inscri1) == True:
         server(Inscri1)
 
-thread = threading.Thread(target = jouer, daemon = True)
-thread.start()
-while True :
-    if client(Inscri2)==True:
-        server(Inscri2)
+jouer()
+
+#thread = threading.Thread(target = jouer, daemon = True)
+#thread.start()
+#while True :
+#    if client(Inscri2)==True:
+#        server(Inscri2)
