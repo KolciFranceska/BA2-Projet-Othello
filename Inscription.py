@@ -3,7 +3,7 @@ import json
 import threading
 from unicodedata import name
 import copy
-from game import game
+import game2
 
 serverAddress = ('localhost',3000)
 with open('Joueur1.json') as file:
@@ -58,10 +58,10 @@ def server(Joueur):
             prof.send(json.dumps(rep_ping).encode()) #convertit le dico python en fichier json
             print(json.loads(Joueur)['name'], rep_ping)
         if msg_prof['request'] == 'play':
-            rep_coup['move']= int(input(json.loads(Joueur)['name'] + " sélectionnez une case pour jouer: "))
+            rep_coup['move']= my_move
             rep_coup['message']=str(rep_coup['move'])
             prof.send(json.dumps(rep_coup).encode())
-            print(rep_coup)
+            print(json.loads(Joueur)['name'] + rep_coup)
         prof.close()
 
 directions = [
@@ -114,10 +114,10 @@ def willBeTaken(state, move):
     otherIndex = (playerIndex+1)%2
 
     if not (0 <= move < 64):
-        raise game.BadMove('Your must be between 0 inclusive and 64 exclusive')
+        raise game2.BadMove('Your must be between 0 inclusive and 64 exclusive')
 
     if move in state['board'][0] + state['board'][1]:
-        raise game.BadMove('This case is not free')
+        raise game2.BadMove('This case is not free')
 
     board = []
     for i in range(2):
@@ -138,7 +138,7 @@ def willBeTaken(state, move):
                 break
 
     if len(cases) == 0:
-        raise game.BadMove('Your move must take opponent\'s pieces')
+        raise game2.BadMove('Your move must take opponent\'s pieces')
     
     return [index(case) for case in cases]
 
@@ -148,7 +148,7 @@ def possibleMoves(state):
         try:
             willBeTaken(state, move)
             res.append(move)
-        except game.BadMove:
+        except game2.BadMove:
             pass
     return res
 
@@ -177,7 +177,7 @@ def Othello(players):
         otherIndex = (playerIndex+1)%2
 
         if len(possibleMoves(state)) > 0 and move is None:
-            raise game.BadMove('You cannot pass your turn if there are possible moves')
+            raise game2.BadMove('You cannot pass your turn if there are possible moves')
 
         if move is not None:
             cases = willBeTaken(state, move)
@@ -196,14 +196,17 @@ def Othello(players):
             elif len(newState['board'][playerIndex]) < len(newState['board'][otherIndex]):
                 winner = otherIndex
             else:
-                raise game.GameDraw(newState)
-            raise game.GameWin(winner, newState)
+                raise game2.GameDraw(newState)
+            raise game2.GameWin(winner, newState)
         
         return newState
 
     return state, next
 
 Game = Othello
+
+def my_move():
+    
 
 if __name__ == '__main__':
     state, next = Game(['LUR', 'HSL'])
