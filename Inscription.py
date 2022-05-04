@@ -7,7 +7,7 @@ from unicodedata import name
 import copy
 import game2
 
-serverAddress = ('172.17.10.33',3000)
+serverAddress = ('localhost',3000)
 with open('Joueur1.json') as file:
     Inscri1 = file.read()
 with open('Joueur2.json') as file:
@@ -216,13 +216,11 @@ def Othello(players):
 Game = Othello
 
 def jouer():
-    if client(Inscri2) == True:
+    if client(Inscri1) == True:
+        server(Inscri1)
+
+thread = threading.Thread(target = jouer, daemon = True)
+thread.start()
+while True :
+    if client(Inscri2)==True:
         server(Inscri2)
-
-jouer()
-
-#thread = threading.Thread(target = jouer, daemon = True)
-#thread.start()
-#while True :
-#    if client(Inscri2)==True:
-#        server(Inscri2)
