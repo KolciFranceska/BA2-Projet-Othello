@@ -8,79 +8,67 @@ import copy
 import game2
 
 serverAddress = ('localhost',3000)
-with open('Joueur1.json') as file:
+with open('Joueur1.json') as file:  #lire les infos des deux joueurs
     Inscri1 = file.read()
-with open('Joueur2.json') as file:
+with open('Joueur2.json') as file:  #pas besoin du deuxième joueur pour l'exam
     Inscri2 = file.read()
 
 def client(Joueur):
-    s = socket.socket()
-    s.connect((serverAddress))
-    s.send(Joueur.encode())
-    response = json.loads(s.recv(2048).decode()) #on reçoit un fichier json en réponse, pour le transformer en dico python on utilise loads
+    s = socket.socket()                             #création d'un socket
+    s.connect((serverAddress))                      #on se connecte
+    s.send(Joueur.encode())                         #on envoie nos infos
+    response = json.loads(s.recv(2048).decode())    #on reçoit un fichier json en réponse, pour le transformer en dico python on utilise loads
     if  response == {"response": "ok"}:
-        print(json.loads(Joueur)['name'], response)
+        print(json.loads(Joueur)['name'], response) #voir le ping du prof
         s.close()
-        return True
+        return True                                 #pour continuer à écouter le server
     else:
         s.close()
         print(json.loads(Joueur)['name'], response)
         return False
 
 def server(Joueur):
-    s2 = socket.socket()
-    serverAddress2 = ('0.0.0.0',json.loads(Joueur)['port'])
-    s2.bind(serverAddress2)
-    s2.listen()
+    s2 = socket.socket()                                    #créer un socket pour envoyer des msg
+    serverAddress2 = ('0.0.0.0',json.loads(Joueur)['port']) #attention, cette fois-ci on envoie et écoute sur le port du joueur
+    s2.bind(serverAddress2)                                 #socket en mode serveur
+    s2.listen()                                             #en mode écoute pour lire ce qu'on nous envoie
     rep_ping = {"response": "pong"}
 
-    best_bords1 = [0,7,63,56]
-    best_bords2=[1,8,6,15,48,57,55,62]
-    bords= [2,3,4,5,23,31,35,47,61,60,59,58,40,31,24,16]
+    best_bords1 = [0,7,63,56]                               #on considère que ce sont les meilleurs bords stratégiques
+    best_bords2=[1,8,6,15,48,57,55,62]                      #puis ceux-là les deuxièmes meilleurs
+    bords= [2,3,4,5,23,31,35,47,61,60,59,58,40,31,24,16]    #et ainsi de suite
     bords_int = [18,19,20,21,29,37,45,44,43,42,34,26]
-    liste_vide =[]
+    liste_vide =[]                                          #on en aura besoin pour envoyer un seul élément vu qu'on a plusieurs conditions
 
-    the_move_played = int
-    list_of_errors = []
-    state = {
-    "players": [],
-    "current": 0,
-    "board":[]}
-    
-    msg_coup = {
-   "request": "play",
-   "lives": 3,
-   "errors": list_of_errors,
-   "state": state}
-
+    the_move_played = int                                   #les msg qu'on va envoyer au prof
     rep_coup = {
    "response": "move",
    "move": the_move_played,
    "message": str}
 
-    while True:
-        prof, address = s2.accept()
-        msg_prof= json.loads(prof.recv(2048).decode())
+    while True:                                             #important pour écouter et envoyer sans arrêt
+        prof, address = s2.accept()                         #j'accepte la connexion du prof pour qu'il m'envoie des msg
+        msg_prof= json.loads(prof.recv(2048).decode())      #je reçois son msg
         print(msg_prof)
-        if msg_prof == {"request": "ping"}:
-            prof.send(json.dumps(rep_ping).encode()) #convertit le dico python en fichier json
-            print(json.loads(Joueur)['name'], rep_ping)
-        if msg_prof['request'] == 'play':
-            print(possibleMoves(msg_prof['state']))
-            if len(possibleMoves(msg_prof['state'])) != 0 :
+        if msg_prof == {"request": "ping"}:                 #pour répondre au ping du prof
+            prof.send(json.dumps(rep_ping).encode())        #convertit le dico python en fichier json
+            print(json.loads(Joueur)['name'], rep_ping)     
+        if msg_prof['request'] == 'play':                   #quand le prof me dmd de jouer un move
+            print(possibleMoves(msg_prof['state']))         #pour voir ma liste de coup possible dans le terminal
+            if len(possibleMoves(msg_prof['state'])) != 0 : #si je peux jouer un coup : je n'envoie pas de None
 
-                for elem in possibleMoves(msg_prof['state']):
-                    if len(liste_vide)==0:
-                        if elem in best_bords1:
+                for elem in possibleMoves(msg_prof['state']):                                  #je parcours les moves possibles
+                    if len(liste_vide)==0:                                                     #j'utilise cette liste pour envoyer qu'un seul coup et pas plusieurs sinon == bug
+                        if elem in best_bords1:                                                #je vérifie si j'ai pas un best_bords1 psq stratégiquement je les préfère
                             liste_vide.append(elem)
-                            rep_coup['move']= elem
-                            rep_coup['message']=str(rep_coup['move'])
-                            prof.send(json.dumps(rep_coup).encode())
+                            rep_coup['move']= elem                                             #je le mets dans mon dico
+                            rep_coup['message']=str(rep_coup['move'])                          #le msg que je vais envoyer dans le jeu = mon move
+                            prof.send(json.dumps(rep_coup).encode())                           #j'envoie tout cela au prof
                             print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
 
                 for elem in possibleMoves(msg_prof['state']):
                     if len(liste_vide)==0:
-                        if elem in best_bords2:
+                        if elem in best_bords2:                                                #même chose ici pour best_bords2 
                             liste_vide.append(elem)
                             rep_coup['move']= elem
                             rep_coup['message']=str(rep_coup['move'])
@@ -89,8 +77,8 @@ def server(Joueur):
 
                 for elem in possibleMoves(msg_prof['state']):
                     if len(liste_vide)==0:
-                        if elem in bords:
-                            liste_vide.append(elem)
+                        if elem in bords:                                                      #et ainsi de suite, je le fais dans l'ordre
+                            liste_vide.append(elem)                                            #càd : best_bords1, best_bords2, bords, bords_int puis random
                             rep_coup['move']= elem
                             rep_coup['message']=str(rep_coup['move'])
                             prof.send(json.dumps(rep_coup).encode())
@@ -107,24 +95,24 @@ def server(Joueur):
 
                 for elem in possibleMoves(msg_prof['state']):
                     if len(liste_vide)==0:
-                        if elem not in (best_bords1 and best_bords2 and bords_int and bords):
+                        if elem not in (best_bords1 and best_bords2 and bords_int and bords): #donc ici si je n'ai pas de bords dispo, je choisis aléatoirement
                             liste_vide.append(choice(possibleMoves(msg_prof["state"])))
                             rep_coup['move']= choice(possibleMoves(msg_prof["state"]))
                             rep_coup['message']=str(rep_coup['move'])
                             prof.send(json.dumps(rep_coup).encode())
                             print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
-                            
-            if len(possibleMoves(msg_prof['state'])) == 0:
+
+            if len(possibleMoves(msg_prof['state'])) == 0:                                     #par contre si ma liste de coup possible est vide, je renvoie None
                 liste_vide.append(1)
                 rep_coup['move'] = None
                 prof.send(json.dumps(rep_coup).encode())
                 print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
-        liste_vide.clear()
+        liste_vide.clear()                                                                     #j'efface la liste qui me sert à renvoyer un seul coup à chaque fois
 
         prof.close()
 
-directions = [
-    ( 0,  1),
+directions = [                         #code du prof que je vais essayer d'expliquer...
+    ( 0,  1),                          #nous prenons les différentes directions possibles qu'on peut faire sur le board
     ( 0, -1),
     ( 1,  0),
     (-1,  0),
@@ -135,13 +123,13 @@ directions = [
 ]
 
 def add(p1, p2):
-    l1, c1 = p1
+    l1, c1 = p1                        #position des deux joueurs p1 et p2 leur ligne et colonne
     l2, c2 = p2
     return l1 + l2, c1 + c2
 
-def coord(index):
-    return index // 8, index % 8
-
+def coord(index):                       
+    return index // 8, index % 8       #va nous servir à avoir le numéro de ligne et de colonne
+                                       #si on donne le numéro de la case == index
 def index(coord):
     l, c = coord
     return l*8+c
@@ -157,12 +145,12 @@ def walk(start, direction):
         yield current
 
 def isGameOver(state):
-    playerIndex = state['current']
+    playerIndex = state['current']          #index des deux joueurs
     otherIndex = (playerIndex+1)%2
 
     res = False
     if len(possibleMoves(state)) == 0:
-        state['current'] = otherIndex
+        state['current'] = otherIndex       #l'autre joueur doit jouer si le premier n'a plus de moves
         if  len(possibleMoves(state)) == 0:
             res = True
     state['current'] = playerIndex
@@ -172,7 +160,7 @@ def willBeTaken(state, move):
     playerIndex = state['current']
     otherIndex = (playerIndex+1)%2
 
-    if not (0 <= move < 64):
+    if not (0 <= move < 64):                                                      #si on sort du board, c'est mauvais
         raise game2.BadMove('Your must be between 0 inclusive and 64 exclusive')
 
     if move in state['board'][0] + state['board'][1]:
@@ -201,7 +189,7 @@ def willBeTaken(state, move):
     
     return [index(case) for case in cases]
 
-def possibleMoves(state):
+def possibleMoves(state):                #renvoie une liste de coups possibles
     print(state)
     res = []
     for move in range(64):
@@ -231,7 +219,7 @@ def Othello(players):
         ]
     }
 
-    def next(state, move):
+    def next(state, move):                        #renvoie l'état suivant par rapport au move qu'on envoie
         newState = copy.deepcopy(state)
         playerIndex = state['current']
         otherIndex = (playerIndex+1)%2
