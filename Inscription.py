@@ -34,9 +34,10 @@ def server(Joueur):
     s2.listen()
     rep_ping = {"response": "pong"}
 
-    bords= [1,2,3,4,5,6,15,23,31,35,47,55,62,61,60,59,58,57,48,40,31,24,16,8]
-    best_bords = [0,7,63,56]
-    bords_int = [9,10,11,12,13,14,17,25,33,41,49,50,51,52,53,54,46,38,30,22]
+    best_bords1 = [0,7,63,56]
+    best_bords2=[1,8,6,15,48,57,55,62]
+    bords= [2,3,4,5,23,31,35,47,61,60,59,58,40,31,24,16]
+    bords_int = [18,19,20,21,29,37,45,44,43,42,34,26]
     liste_vide =[]
 
     the_move_played = int
@@ -67,14 +68,25 @@ def server(Joueur):
         if msg_prof['request'] == 'play':
             print(possibleMoves(msg_prof['state']))
             if len(possibleMoves(msg_prof['state'])) != 0 :
+
                 for elem in possibleMoves(msg_prof['state']):
                     if len(liste_vide)==0:
-                        if elem in best_bords:
+                        if elem in best_bords1:
                             liste_vide.append(elem)
                             rep_coup['move']= elem
                             rep_coup['message']=str(rep_coup['move'])
                             prof.send(json.dumps(rep_coup).encode())
                             print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
+
+                for elem in possibleMoves(msg_prof['state']):
+                    if len(liste_vide)==0:
+                        if elem in best_bords2:
+                            liste_vide.append(elem)
+                            rep_coup['move']= elem
+                            rep_coup['message']=str(rep_coup['move'])
+                            prof.send(json.dumps(rep_coup).encode())
+                            print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move'])) 
+
                 for elem in possibleMoves(msg_prof['state']):
                     if len(liste_vide)==0:
                         if elem in bords:
@@ -83,14 +95,25 @@ def server(Joueur):
                             rep_coup['message']=str(rep_coup['move'])
                             prof.send(json.dumps(rep_coup).encode())
                             print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
+
                 for elem in possibleMoves(msg_prof['state']):
                     if len(liste_vide)==0:
-                        if elem not in (best_bords and bords):
+                        if elem in bords_int:
+                            liste_vide.append(elem)
+                            rep_coup['move']= elem
+                            rep_coup['message']=str(rep_coup['move'])
+                            prof.send(json.dumps(rep_coup).encode())
+                            print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
+
+                for elem in possibleMoves(msg_prof['state']):
+                    if len(liste_vide)==0:
+                        if elem not in (best_bords1 and best_bords2 and bords_int and bords):
                             liste_vide.append(choice(possibleMoves(msg_prof["state"])))
                             rep_coup['move']= choice(possibleMoves(msg_prof["state"]))
                             rep_coup['message']=str(rep_coup['move'])
                             prof.send(json.dumps(rep_coup).encode())
                             print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
+                            
             if len(possibleMoves(msg_prof['state'])) == 0:
                 liste_vide.append(1)
                 rep_coup['move'] = None
@@ -242,13 +265,6 @@ def Othello(players):
 
 Game = Othello
 
-#def jouer():
-    #if client(Inscri1) == True:
-        #server(Inscri1)
-#jouer()
-
-#thread = threading.Thread(target = jouer, daemon = True)
-#thread.start()
 while True :
     if client(Inscri1)==True:
         server(Inscri1)
