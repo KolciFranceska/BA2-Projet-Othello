@@ -86,11 +86,13 @@ def server(Joueur):
                 for elem in possibleMoves(msg_prof['state']):
                     if len(liste_vide)==0:
                         if elem not in (best_bords and bords):
+                            liste_vide.append(choice(possibleMoves(msg_prof["state"])))
                             rep_coup['move']= choice(possibleMoves(msg_prof["state"]))
                             rep_coup['message']=str(rep_coup['move'])
                             prof.send(json.dumps(rep_coup).encode())
                             print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
             if len(possibleMoves(msg_prof['state'])) == 0:
+                liste_vide.append(1)
                 rep_coup['move'] = None
                 prof.send(json.dumps(rep_coup).encode())
                 print(json.loads(Joueur)['name'] + ': ' + str(rep_coup['move']))
@@ -240,13 +242,13 @@ def Othello(players):
 
 Game = Othello
 
-def jouer():
-    if client(Inscri1) == True:
-        server(Inscri1)
-jouer()
+#def jouer():
+    #if client(Inscri1) == True:
+        #server(Inscri1)
+#jouer()
 
 #thread = threading.Thread(target = jouer, daemon = True)
 #thread.start()
-#while True :
-#    if client(Inscri2)==True:
-#        server(Inscri2)
+while True :
+    if client(Inscri1)==True:
+        server(Inscri1)
