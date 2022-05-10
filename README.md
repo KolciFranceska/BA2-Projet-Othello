@@ -4,6 +4,7 @@
 __Auteur :__   
 
   Françeska Kolçi 195387 
+   
   Aouragh Ibrahim 20187 
 
  
@@ -54,8 +55,9 @@ Evidemment, toutes nos définitions ne seront pas expliquées sur le « Read m
 La connexion au serveur se fait au moyen de deux fonctions : « client(joueur) et server(joueur) ».  La fonction client est celle que nous allons utiliser afin de pouvoir se connecter au serveur du prof.  La fonction server va pouvoir être utiliser afin d’envoyer des informations aux serveur et écouter en permanence sur le port du joueur.  
 
 Après s’être connecté au serveur du prof, nous avons créé une fonction « possibleMoves » qui nous renvoi sous forme de liste tous les coups possibles que nous pouvons jouer.  Notre avons ensuite créé plusieurs listes de cases que nous considérons comme étant les meilleures à jouer.   Nous mettons dans l’ordre les moves du plus important au moins important qu’on privilégie pour notre stratégie : nous sélectionnons d’abord un élément de la liste « Best_bords1 »,  s’il n’y en a pas alors on cherche une move dans la liste « Best_bords2 », même chose s’il n'y a toujours pas de moves à faire dans ces cases-là, on choisit la liste « Bords Int ».  
-Et enfin si nous n’avons toujours pas de moves figurant dans une de ces listes, nous choisissons un élément Random de nos moves possibles.    
-Pour résumé, notre stratégie consiste à parcourir tous les coups possibles et choisir la meilleure d’entre-elle, selon nos critères.  
+Et enfin si nous n’avons toujours pas de moves figurant dans une de ces listes, nous choisissons un élément Random de nos moves possibles.
+
+Pour résumer, notre stratégie consiste à parcourir tous les coups possibles et choisir la meilleure d’entre-elle, selon nos critères.  
 
 ## *3) Random.py*  
 Cette partie de code nous sert à perfectionner notre stratégie. En effet, ce sont des matchs qui se disputent contre notre I.A et un Random. 
