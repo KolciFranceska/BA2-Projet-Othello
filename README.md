@@ -67,6 +67,6 @@ Ce code veille au bon déroulement de la partie et du respect des règles. Notam
 
 # Les bibliothèques utilisées  
 
-Nous avons utilisé plusieurs bibliothèques afin de faire notre projet.  Nous avons importé les sockets pour la création du serveur, JSON pour créer nos fichiers qui communique avec le serveur du prof et random pour pouvoir jouer aléatoirement.
+Nous avons utilisé plusieurs bibliothèques afin de faire notre projet.  Nous avons importé les sockets pour la création du serveur, JSON pour créer nos fichiers avec les infos du port sur lequel le prof écoutera nos infos et random pour pouvoir jouer aléatoirement pour certains cas.
 
  
