@@ -63,6 +63,10 @@ Pour résumer, notre stratégie consiste à parcourir tous les coups possibles e
 Cette partie de code nous sert à perfectionner notre stratégie. En effet, ce sont des matchs qui se disputent contre notre I.A et un Random. 
 
 ## *4) Game2.py*  
-Ce code veille au bon déroulement de la partie et du respect des règles. Notamment à ne pas faire de « Bad move » ou d’erreur.  
+Ce code veille au bon déroulement de la partie et du respect des règles. Notamment à ne pas faire de « Bad move » ou d’erreur. 
+
+# Les bibliothèques utilisées  
+
+Nous avons utilisé plusieurs bibliothèques afin de faire notre projet.  Nous avons importé les sockets pour la création du serveur, JSON pour créer nos fichiers qui communique avec le serveur du prof et random pour pouvoir jouer aléatoirement.
 
  
