@@ -1,5 +1,9 @@
 # Projet BA2 Othello 
 
+__Précision au niveau du démarrage de l'IA :__
+
+Il suffit juste de prendre les fichiers suivants : Inscription.py, game2.py et Joueur1.json et de run le code.
+
 
 __Auteur :__   
 
